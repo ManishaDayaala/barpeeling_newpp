@@ -14,8 +14,15 @@ import random
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 import joblib
-
 import sys
+
+
+#....CHANGED...........................................................................................................
+if "check_bd_clicked" not in st.session_state:
+    st.session_state["check_bd_clicked"] = False
+if "bd_output" not in st.session_state:
+    st.session_state["bd_output"] = ""
+
 # Set a random seed for reproducibility
 def set_random_seed(seed_value=42):
     np.random.seed(seed_value)
@@ -372,17 +379,42 @@ def predict_ensemble(test_file_path, model_folder_path):
 # Streamlit app UI
 st.title("Breakdown Code Classification")
 
-if st.button("Check BD Classification"):
+#if st.button("Check BD Classification"):
     #training_file_path = r"D:\APPdata\Training\Training.xlsx" # Update the path
     #test_file_path = r"D:\APPdata\24hrData\Dailydata.xlsx"  # Update the path
     #model_folder_path = "D:\APPdata\Models"  # Update the path
 
-    with st.spinner("Training the model and making predictions..."):
+#   with st.spinner("Training the model and making predictions..."):
+        #train_ensemble_model(training_file_path, model_folder_path)  # Train the model
+        #result = predict_ensemble(test_file_path, model_folder_path)  # Predict breakdown
+
+    #st.write(result)
+    #st.success("Prediction complete!")
+
+
+#...CHNAGED................................................................................................................................................
+
+if st.button("Check BD Classification"):
+    with st.spinner("Checking breakdown..."):
         #train_ensemble_model(training_file_path, model_folder_path)  # Train the model
         result = predict_ensemble(test_file_path, model_folder_path)  # Predict breakdown
-
+        
+        # Store the result in session state
+        st.session_state["bd_output"] = result
+        
+        # Update session state based on the output
+        if result != "No BD predicted":
+            st.session_state["check_bd_clicked"] = True
+        else:
+            st.session_state["check_bd_clicked"] = False
+    
+    # Display the result
     st.write(result)
     st.success("Prediction complete!")
+
+
+###########################                                    #######################################
+
 
 
 ###########################                                    #######################################
@@ -499,36 +531,79 @@ def predict_time(test_file_path):
             time_to_breakdown_with_time.append(adjusted_time_to_bd)
         return time_to_breakdown_with_time
 
-   
-    def find_minimum_and_maximum_time(time_to_breakdown_with_time):
+   #CHANGE.........................................................................................................................
+    def find_minimum_maximum_and_mode_interval(time_to_breakdown_with_time):
         # Filter out negative times
         positive_times = [time for time in time_to_breakdown_with_time if time >= 0]
     
-        #if not positive_times:
-            #return "No positive breakdown times available."
+        if not positive_times:
+            return None, None, None, None  # Handle no positive breakdown times case
     
+        # Calculate minimum and maximum times
         min_time = min(positive_times)
-        max_time = max(time_to_breakdown_with_time)
-        
-        return min_time, max_time
+        max_time = max(positive_times)
     
+        # Define intervals of 5 units
+        interval_start = min_time
+        interval_end = max_time + 5  # Extend range to include the last value
+        bins = []
+        frequencies = []
+    
+        while interval_start < interval_end:
+            # Create interval range
+            interval = (interval_start, interval_start + 5)
+            bins.append(interval)
+    
+            # Count occurrences within the interval
+            frequency = sum(1 for time in positive_times if interval[0] <= time < interval[1])
+            frequencies.append(frequency)
+    
+            # Move to the next interval
+            interval_start += 5
+    
+        # Find the mode interval (highest frequency)
+        max_frequency = max(frequencies)
+        mode_index = frequencies.index(max_frequency)
+        mode_interval = bins[mode_index]
+    
+        return min_time, max_time, mode_interval, max_frequency
+
+
+
    
     try:
         # Load and preprocess the test data
         df, X_test, serial_numbers, times = load_test_data(test_file_path)
         X_test_scaled = preprocess_test_data(X_test)
-
+    
         # Make predictions
         predictions = predict_time_to_breakdown(X_test_scaled)
         predictions_with_time = calculate_time_difference(times, predictions)
-
-        # Find the minimum and maximum predicted times
-        min_time, max_time = find_minimum_and_maximum_time(predictions_with_time)
-
-        # Format the output as a range in hours
-        return f"Breakdown time range (w.r.t 5:30 AM ): {min_time:.2f} to {max_time:.2f} hours"
+    
+        # Find the minimum, maximum, and mode interval
+        min_time, max_time, mode_interval, mode_frequency = find_minimum_maximum_and_mode_interval(predictions_with_time)
+    
+        if min_time is None or max_time is None or mode_interval is None:
+            return "No positive breakdown times available."
+    
+        # Calculate the midpoint of the mode interval
+        mode_midpoint = (mode_interval[0] + mode_interval[1]) / 2
+    
+        # Define weights for min and mode
+        W_min = 0.7
+        W_mode = 0.3
+    
+        # Calculate weighted breakdown time
+        weighted_breakdown_time = (W_min * min_time) + (W_mode * mode_midpoint)
+    
+        # Return the final weighted breakdown time
+        return (f"Breakdown might occur in approximately w.r.t 6 AM yesterday: "
+                f"{weighted_breakdown_time:.2f} hours")
     except Exception as e:
         return f"Error: {e}"
+
+
+   
 
     
 
@@ -536,16 +611,28 @@ def predict_time(test_file_path):
 # Streamlit app UI
 st.title("Time Prediction")
 
-# Button to train the model and predict time
-if st.button("Predict Time"):
-    # Train the model (if needed) and predict time
-    with st.spinner("Training the model and making predictions..."):
-        #train_model(training_file_path)  # Train the model (use predefined training data)
-        result = predict_time(test_file_path)  # Predict time using predefined test data
+# # Button to train the model and predict time
+# if st.button("Predict Time"):
+#     # Train the model (if needed) and predict time
+#     with st.spinner("Training the model and making predictions..."):
+#         #train_model(training_file_path)  # Train the model (use predefined training data)
+#         result = predict_time(test_file_path)  # Predict time using predefined test data
     
-    st.write(f"Predicted Time to Breakdown: {result}")
-    st.success("Prediction complete!")
+#     st.write(f"Predicted Time to Breakdown: {result}")
+#     st.success("Prediction complete!")
 
+#....CHANGED........................................................................................................................................
+
+
+if st.button("Predict Time", disabled=not st.session_state["check_bd_clicked"]):
+    if st.session_state["bd_output"] == "No BD predicted":
+        st.error("No breakdown predicted. Cannot proceed with time prediction.")
+    else:
+        with st.spinner("Training the model and making predictions..."):
+            #train_model(training_file_path)
+            result = predict_time(test_file_path)  # Predict time using predefined test data
+        st.write(f"Predicted Time to Breakdown: {result}")
+        st.success("Prediction complete!")
 
 
 
@@ -698,96 +785,6 @@ if st.button("Predict Time"):
 ###    st.write(f"classified breakdown: {result}")
 ###    st.success("Prediction complete!")
 
-
-
-
-################breakdown records###########################
-
-import streamlit as st
-import pandas as pd
-from datetime import datetime
-
-# Path to the Excel file
-#excel_file_path = "breakdown_data.xlsx"
-
-# Function to save breakdown data to Excel
-def save_breakdown_data():
-    date = st.session_state.date_entry.strftime("%d-%m-%y")
-    time = f"{st.session_state.hour_combobox}:{st.session_state.minute_combobox} {st.session_state.am_pm_combobox}"
-    code = st.session_state.code_entry
-    
-    if not code:
-        st.session_state.status = "Please fill the Breakdown Code!"
-        st.session_state.status_color = "red"
-        return
-
-    try:
-        df = pd.read_excel(excel_file_path)
-        new_row = pd.DataFrame([[date, time, code]], columns=["Date", "Time", "Code"])
-        df = pd.concat([df, new_row], ignore_index=True)
-        df.to_excel(excel_file_path, index=False)
-        st.session_state.status = "Breakdown data saved successfully!"
-        st.session_state.status_color = "green"
-    except Exception as e:
-        st.session_state.status = f"Error: {e}"
-        st.session_state.status_color = "red"
-
-# Function to clear the breakdown input fields
-def clear_breakdown_fields():
-    st.session_state.date_entry = datetime.now()
-    st.session_state.hour_combobox = '12'
-    st.session_state.minute_combobox = '00'
-    st.session_state.am_pm_combobox = 'AM'
-    st.session_state.code_entry = ''
-    st.session_state.status = "Fields cleared!"
-    st.session_state.status_color = "blue"
-
-# Streamlit UI Setup
-def display_ui():
-    # Initialize session state if not already initialized
-    if 'status' not in st.session_state:
-        st.session_state.status = ""
-        st.session_state.status_color = "black"
-        st.session_state.date_entry = datetime.now()
-        st.session_state.hour_combobox = '12'
-        st.session_state.minute_combobox = '00'
-        st.session_state.am_pm_combobox = 'AM'
-        st.session_state.code_entry = ''
-
-    st.title("Breakdown Record")
-
-    # Date input
-    st.session_state.date_entry = st.date_input("Date", value=st.session_state.date_entry)
-    
-    # Time selection
-    time_column1, time_column2, time_column3 = st.columns(3)
-    with time_column1:
-        st.session_state.hour_combobox = st.selectbox("Hour", options=[f"{i:02d}" for i in range(1, 13)], index=int(st.session_state.hour_combobox)-1)
-    with time_column2:
-        st.session_state.minute_combobox = st.selectbox("Minute", options=[f"{i:02d}" for i in range(0, 60, 5)], index=int(st.session_state.minute_combobox)//5)
-    with time_column3:
-        st.session_state.am_pm_combobox = st.selectbox("AM/PM", options=["AM", "PM"], index=["AM", "PM"].index(st.session_state.am_pm_combobox))
-
-    # Breakdown code input
-    st.session_state.code_entry = st.text_input("Breakdown Code", value=st.session_state.code_entry)
-
-    # Status display (Feedback to user)
-    st.markdown(f"<p style='color:{st.session_state.status_color};'>{st.session_state.status}</p>", unsafe_allow_html=True)
-
-    # Buttons for saving and clearing
-    col1, col2 = st.columns(2)
-    with col1:
-        save_button = st.button("Save Breakdown")
-        if save_button:
-            save_breakdown_data()
-    with col2:
-        clear_button = st.button("Clear Fields")
-        if clear_button:
-            clear_breakdown_fields()
-
-# Run the UI display
-if __name__ == "__main__":
-    display_ui()
 
 
 
