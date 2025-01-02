@@ -503,12 +503,12 @@ def predict_time(test_file_path):
         return df, X_test, serial_numbers, times
 
     def preprocess_test_data(X_test):
-        scaler = joblib.load(os.path.join(model_folder_path, 'scalerfinT1.pkl'))
+        scaler = joblib.load(os.path.join(model_folder_path, 'scalerfinT.pkl'))
         X_test_scaled = scaler.transform(X_test)
         return X_test_scaled
 
     def predict_time_to_breakdown(X_test_scaled):
-        model = load_model(os.path.join(model_folder_path, 'trained_modelFINT1.h5'))
+        model = load_model(os.path.join(model_folder_path, 'trained_modelFINT.h5'))
         predictions = model.predict(X_test_scaled)
         return predictions
 
