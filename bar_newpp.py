@@ -530,10 +530,10 @@ def predict_time(test_file_path):
         # Filter out negative times
         positive_times = [time for time in time_to_breakdown_with_time if time >= 0]
     
-        #if not positive_times:
-            #return "No positive breakdown times available."
+        if not positive_times:
+            return "No positive breakdown times available."
     
-        min_time = min(positive_times)
+        min_time = min(time_to_breakdown_with_time)
         max_time = max(time_to_breakdown_with_time)
         
         return min_time, max_time
