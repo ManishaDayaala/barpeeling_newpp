@@ -565,28 +565,18 @@ def predict_time(test_file_path):
 # Streamlit app UI
 st.title("Time Prediction")
 
-# # Button to train the model and predict time
-# if st.button("Predict Time"):
-#     # Train the model (if needed) and predict time
-#     with st.spinner("Training the model and making predictions..."):
-#         #train_model(training_file_path)  # Train the model (use predefined training data)
-#         result = predict_time(test_file_path)  # Predict time using predefined test data
+ # Button to train the model and predict time
+if st.button("Predict Time"):
+    # Train the model (if needed) and predict time
+     with st.spinner("Training the model and making predictions..."):
+         #train_model(training_file_path)  # Train the model (use predefined training data)
+         result = predict_time(test_file_path)  # Predict time using predefined test data
     
-#     st.write(f"Predicted Time to Breakdown: {result}")
-#     st.success("Prediction complete!")
+     st.write(f"Predicted Time to Breakdown: {result}")
+     st.success("Prediction complete!")
 
 #....CHANGED........................................................................................................................................
 
-
-if st.button("Predict Time", disabled=not st.session_state["check_bd_clicked"]):
-    if st.session_state["bd_output"] == "No BD predicted":
-        st.error("No breakdown predicted. Cannot proceed with time prediction.")
-    else:
-        with st.spinner("Training the model and making predictions..."):
-            #train_model(training_file_path)
-            result = predict_time(test_file_path)  # Predict time using predefined test data
-        st.write(f"Predicted Time to Breakdown: {result}")
-        st.success("Prediction complete!")
 
 
 
