@@ -508,10 +508,10 @@ def predict_time(test_file_path):
         #if not positive_times:
             #return "No positive breakdown times available."
     
-        #min_time = min(positive_times)
+        min_time = min(positive_times)
         max_time = max(time_to_breakdown_with_time)
         
-        return  max_time  #min_time,
+        return  max_time, min_time
     
    
     try:
@@ -524,10 +524,10 @@ def predict_time(test_file_path):
         predictions_with_time = calculate_time_difference(times, predictions)
 
         # Find the minimum and maximum predicted times
-        max_time = find_minimum_and_maximum_time(predictions_with_time)   #min_time,
+        min_time, max_time = find_minimum_and_maximum_time(predictions_with_time)   #
 
         # Format the output as a range in hours
-        return f"Breakdown time range (w.r.t 5:30 AM ): {max_time:.2f} hours"   #{min_time:.2f} to 
+        return f"Breakdown time range (w.r.t 5:30 AM ):{min_time:.2f} to {max_time:.2f} hours"   # 
     except Exception as e:
         return f"Error: {e}"
 
