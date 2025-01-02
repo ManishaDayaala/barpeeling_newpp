@@ -14,8 +14,9 @@ import random
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 import joblib
-
 import sys
+
+
 # Set a random seed for reproducibility
 def set_random_seed(seed_value=42):
     np.random.seed(seed_value)
@@ -23,7 +24,7 @@ def set_random_seed(seed_value=42):
     tf.random.set_seed(seed_value)
 
 # Define the main folder path
-MAINFOLDER = r"D:\Appdata_barpeeling"
+MAINFOLDER = r"./Appdata_barpeeling"
 
 # Create other paths relative to the main folder
 training_file_path = os.path.join(MAINFOLDER, "Training", "Training_barpeeling.xlsx")  # FIXED TRAINING DATA
