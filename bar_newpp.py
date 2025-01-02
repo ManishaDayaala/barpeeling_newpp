@@ -524,74 +524,45 @@ def predict_time(test_file_path):
         return time_to_breakdown_with_time
 
    
-    #CHANGE.........................................................................................................................
-    def find_minimum_maximum_and_mode_interval(time_to_breakdown_with_time):
+    def calculate_time_difference(times, predictions):
+        time_to_breakdown_with_time = []
+        base_time = datetime.strptime(times[0],'%I:%M %p')
+        for time_str, prediction in zip(times, predictions):
+            time_obj = datetime.strptime(time_str, '%I:%M %p')
+            #midnight = datetime.combine(time_obj.date(), datetime.min.time())
+            time_difference = (time_obj - base_time).total_seconds() / 3600
+            adjusted_time_to_bd = prediction[0] + time_difference
+            time_to_breakdown_with_time.append(adjusted_time_to_bd)
+        return time_to_breakdown_with_time
+
+   
+    def find_minimum_and_maximum_time(time_to_breakdown_with_time):
         # Filter out negative times
         positive_times = [time for time in time_to_breakdown_with_time if time >= 0]
     
-        if not positive_times:
-            return None, None, None, None  # Handle no positive breakdown times case
+        #if not positive_times:
+            #return "No positive breakdown times available."
     
-        # Calculate minimum and maximum times
         min_time = min(positive_times)
-        max_time = max(positive_times)
+        max_time = max(time_to_breakdown_with_time)
+        
+        return min_time, max_time
     
-        # Define intervals of 5 units
-        interval_start = min_time
-        interval_end = max_time + 5  # Extend range to include the last value
-        bins = []
-        frequencies = []
-    
-        while interval_start < interval_end:
-            # Create interval range
-            interval = (interval_start, interval_start + 5)
-            bins.append(interval)
-    
-            # Count occurrences within the interval
-            frequency = sum(1 for time in positive_times if interval[0] <= time < interval[1])
-            frequencies.append(frequency)
-    
-            # Move to the next interval
-            interval_start += 5
-    
-        # Find the mode interval (highest frequency)
-        max_frequency = max(frequencies)
-        mode_index = frequencies.index(max_frequency)
-        mode_interval = bins[mode_index]
-    
-        return min_time, max_time, mode_interval, max_frequency
-
-
-
    
     try:
         # Load and preprocess the test data
         df, X_test, serial_numbers, times = load_test_data(test_file_path)
         X_test_scaled = preprocess_test_data(X_test)
-    
+
         # Make predictions
         predictions = predict_time_to_breakdown(X_test_scaled)
         predictions_with_time = calculate_time_difference(times, predictions)
-    
-        # Find the minimum, maximum, and mode interval
-        min_time, max_time, mode_interval, mode_frequency = find_minimum_maximum_and_mode_interval(predictions_with_time)
-    
-        if min_time is None or max_time is None or mode_interval is None:
-            return "No positive breakdown times available."
-    
-        # Calculate the midpoint of the mode interval
-        mode_midpoint = (mode_interval[0] + mode_interval[1]) / 2
-    
-        # Define weights for min and mode
-        W_min = 0.7
-        W_mode = 0.3
-    
-        # Calculate weighted breakdown time
-        weighted_breakdown_time = (W_min * min_time) + (W_mode * mode_midpoint)
-    
-        # Return the final weighted breakdown time
-        return (f"Breakdown might occur in approximately w.r.t 6 AM yesterday: "
-                f"{weighted_breakdown_time:.2f} hours")
+
+        # Find the minimum and maximum predicted times
+        min_time, max_time = find_minimum_and_maximum_time(predictions_with_time)
+
+        # Format the output as a range in hours
+        return f"Breakdown time range (w.r.t 5:30 AM ): {min_time:.2f} to {max_time:.2f} hours"
     except Exception as e:
         return f"Error: {e}"
 
