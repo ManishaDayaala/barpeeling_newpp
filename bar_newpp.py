@@ -801,12 +801,12 @@ import matplotlib.pyplot as plt
 
 # Mapping for parameters to descriptive names
 parameter_mapping = {
-    'tot_acc': 'Acceleration',
-    'ax_vel': 'Axial Velocity',
-    'ver_vel': 'Vertical Velocity',
-    'hor_vel': 'Horizontal Velocity',
-    'temp': 'Temperature',
-    'aud': 'Audio'
+    'a2': 'Acceleration',
+    'av2': 'Axial Velocity',
+    'vv2': 'Vertical Velocity',
+    'hv2': 'Horizontal Velocity',
+    't2': 'Temperature',
+    'd2': 'Audio'
 }
 
 # Column types with "All" option for UI
