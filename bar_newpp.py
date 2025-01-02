@@ -461,7 +461,7 @@ def train_model(training_file_path):
         return X, y
 
     def preprocess_data(X, y):
-        mask = y < 192  # Time to breakdown less than 72 hours
+        mask = y < 90  # Time to breakdown less than 72 hours
         X_filtered = X[mask]
         y_filtered = y[mask]
         
@@ -470,7 +470,7 @@ def train_model(training_file_path):
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
         X_val_scaled = scaler.transform(X_val)
-        joblib.dump(scaler, os.path.join(model_folder_path, 'scalerfinT.pkl'))
+        joblib.dump(scaler, os.path.join(model_folder_path, 'scalerfinT1.pkl'))
         return X_train_scaled, X_val_scaled, y_train, y_val
 
     def build_model(input_shape):
@@ -503,12 +503,12 @@ def predict_time(test_file_path):
         return df, X_test, serial_numbers, times
 
     def preprocess_test_data(X_test):
-        scaler = joblib.load(os.path.join(model_folder_path, 'scalerfinT.pkl'))
+        scaler = joblib.load(os.path.join(model_folder_path, 'scalerfinT1.pkl'))
         X_test_scaled = scaler.transform(X_test)
         return X_test_scaled
 
     def predict_time_to_breakdown(X_test_scaled):
-        model = load_model(os.path.join(model_folder_path, 'trained_modelFINT.h5'))
+        model = load_model(os.path.join(model_folder_path, 'trained_modelFINT1.h5'))
         predictions = model.predict(X_test_scaled)
         return predictions
 
@@ -524,14 +524,14 @@ def predict_time(test_file_path):
             adjusted_time_to_bd = prediction[0] + time_difference
             time_to_breakdown_with_time.append(adjusted_time_to_bd)
         return time_to_breakdown_with_time
-
    
+    
     def find_minimum_and_maximum_time(time_to_breakdown_with_time):
         # Filter out negative times
         positive_times = [time for time in time_to_breakdown_with_time if time >= 0]
     
-        if not positive_times:
-            return "No positive breakdown times available."
+        #if not positive_times:
+            #return "No positive breakdown times available."
     
         min_time = min(positive_times)
         max_time = max(time_to_breakdown_with_time)
@@ -556,24 +556,25 @@ def predict_time(test_file_path):
     except Exception as e:
         return f"Error: {e}"
 
-
-   
-
     
 
 
 # Streamlit app UI
 st.title("Time Prediction")
 
- # Button to train the model and predict time
+# Button to train the model and predict time
 if st.button("Predict Time"):
     # Train the model (if needed) and predict time
-     with st.spinner("Training the model and making predictions..."):
-         #train_model(training_file_path)  # Train the model (use predefined training data)
-         result = predict_time(test_file_path)  # Predict time using predefined test data
+    with st.spinner("Training the model and making predictions..."):
+        #train_model(training_file_path)  # Train the model (use predefined training data)
+        result = predict_time(test_file_path)  # Predict time using predefined test data
     
-     st.write(f"Predicted Time to Breakdown: {result}")
-     st.success("Prediction complete!")
+    st.write(f"Predicted Time to Breakdown: {result}")
+    st.success("Prediction complete!")
+   
+   
+    
+   
 
 #....CHANGED........................................................................................................................................
 
