@@ -533,7 +533,7 @@ def predict_time(test_file_path):
         if not positive_times:
             return "No positive breakdown times available."
     
-        min_time = min(time_to_breakdown_with_time)
+        min_time = min(positive_times)
         max_time = max(time_to_breakdown_with_time)
         
         return min_time, max_time
