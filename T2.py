@@ -202,7 +202,10 @@ def process_data():
     output_df.insert(2, 'Sr No', sr_no_list)
 
     # Add an empty 'Code' column at the end
-    output_df['Code'] = '0'
+    output_df['Code'] = 0
+    
+    # Fill NaN values in the DataFrame with 0
+    output_df = output_df.fillna(0)
 
 
     # Save the processed data using ExcelWriter
