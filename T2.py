@@ -517,7 +517,7 @@ st.title("Anamoly Detector")
 # Inside Streamlit UI
 if st.button("Check abnormality in sensors"):
     with st.spinner("🔍 Checking for abnormality..."):
-        train_lstm_autoencoder_model(training_file_path, model_folder_path)
+        #train_lstm_autoencoder_model(training_file_path, model_folder_path)
         result = predict_lstm_autoencoder(test_file_path, model_folder_path)
         st.session_state["Anamoly_output"] = result
 
