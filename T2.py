@@ -442,7 +442,7 @@ def predict_lstm_autoencoder(test_file_path, model_folder_path):
     X_test = df_test[[col for col in column_names if not col.endswith(('_d2', '_t2'))]]
 
     # Load scaler and scale
-    scaler = joblib.load(os.path.join(model_folder_path, "lstm_auto_scaler.pkl"))
+    scaler = joblib.load(os.path.join(model_folder_path, "lstm_auto_scaler1.pkl"))
     X_test_scaled = scaler.transform(X_test)
 
     # Create sequences
@@ -456,7 +456,7 @@ def predict_lstm_autoencoder(test_file_path, model_folder_path):
     X_test_seq = create_sequences(X_test_scaled)
 
     # Load model
-    model = load_model(os.path.join(model_folder_path, "lstm_auto_model.h5"))
+    model = load_model(os.path.join(model_folder_path, "lstm_auto_model1.h5"))
 
     # Predict and calculate reconstruction error per feature
     X_pred = model.predict(X_test_seq)
