@@ -468,6 +468,7 @@ def predict_lstm_autoencoder(test_file_path, model_folder_path):
 
     anomaly_indices = np.where(overall_mae > threshold)[0]
     feature_anomalies = np.where(errors[anomaly_indices] > np.percentile(errors, 95), 1, 0)
+    
 
     sensor_dict = {}
 
