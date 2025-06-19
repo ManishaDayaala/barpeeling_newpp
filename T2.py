@@ -446,7 +446,7 @@ def predict_lstm_autoencoder(test_file_path, model_folder_path):
     X_test_scaled = scaler.transform(X_test)
 
     # Create sequences
-    TIME_STEPS = 30
+    TIME_STEPS = 10
     def create_sequences(data, time_steps=TIME_STEPS):
         seqs = []
         for i in range(len(data) - time_steps):
@@ -468,7 +468,6 @@ def predict_lstm_autoencoder(test_file_path, model_folder_path):
 
     anomaly_indices = np.where(overall_mae > threshold)[0]
     feature_anomalies = np.where(errors[anomaly_indices] > np.percentile(errors, 95), 1, 0)
-    
 
     sensor_dict = {}
 
@@ -483,7 +482,7 @@ def predict_lstm_autoencoder(test_file_path, model_folder_path):
                 sensor_dict[sensor_id]["params"].add(feature_name)
 
     # Filter only sensors with anomaly count > 30
-    filtered_dict = {sensor: info for sensor, info in sensor_dict.items() if info["count"] > 8}
+    filtered_dict = {sensor: info for sensor, info in sensor_dict.items() if info["count"] > 5}
 
     if not filtered_dict:
         st.session_state["check_bd_clicked"] = False
@@ -526,6 +525,8 @@ if st.button("Check abnormality in sensors"):
             st.markdown(f"```text\n{result}\n```")
         else:
             st.success("✅ Anomaly detection complete!")
+
+
 
 
 
