@@ -288,6 +288,25 @@ if st.button("Predict Breakdown"):
         st.warning("Please upload today's data for prediction.")
 
 
+# Use an expander to provide breakdown code information
+with st.expander("Breakdown Classification and Codes", expanded=True):
+    st.markdown("""
+    Each breakdown type is assigned a unique code to simplify identification. Here’s what each code represents:
+
+    - **Code 1: carriage gripper,carriage guide pin,carriage roller,carriage hydraulic oil lekage,exit pinch**  
+      Issues specifically related to the carriage gripper,carriage guide pin,carriage roller,carriage hydraulic oil lekage,exit pinch of the machine.
+    
+    - **Code 2: whip shell hydraulic cylinder, whip shell roller**  
+      Covers problems with the whip shell hydraulic cylinder or whip shell roller.
+    
+    - **Code 3: cutter head**  
+      Applies to issues with the cutter head.
+
+    - **Code 4: rod not moving and entry pinch**  
+      Applies to issues with the rod not moving or entry pinch.
+    """)
+
+
 
 
 # ################################        time prediction             #############################
