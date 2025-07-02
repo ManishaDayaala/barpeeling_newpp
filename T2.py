@@ -257,7 +257,7 @@ def predict_future_breakdown(test_file_path, model_folder_path):
     model = joblib.load(os.path.join(model_folder_path, "ensemble_shifted_model.pkl"))
     preds = model.predict(X_scaled)
 
-    labels = ["Code 0", "Code 1", "Code 2"]
+    labels = ["Code 0", "Code 1", "Code 2", "Code 3","Code 4"]
     result_labels = [labels[p] for p in preds]
 
     non_zero = [lbl for lbl in result_labels if lbl != "Code 0"]
