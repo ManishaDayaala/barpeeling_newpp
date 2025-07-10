@@ -50,8 +50,8 @@ with open(logo_path, "rb") as image_file:
     encoded_image = base64.b64encode(image_file.read()).decode()
 
 # Define the sizes you want
-logo_width = 200         # Adjust logo width
-title_font_size = 50    # Adjust title font size
+logo_width = 250         # Adjust logo width
+title_font_size = 43    # Adjust title font size
 
 
 # Display logo and title side by side
