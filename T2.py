@@ -37,7 +37,7 @@ test_file_path = os.path.join(MAINFOLDER, "24hrData", "Dailydata_barpeeling.xlsx
 excel_file_path = os.path.join(MAINFOLDER, "Breakdownrecords_barpeeling.xlsx")  # Recording excel for BD
 folderpath = os.path.join(MAINFOLDER, "TemporaryData")  # Temporary dump files collector
 threshold_file_path = os.path.join(MAINFOLDER,"Thresholds_barpeeling.xlsx") #
-logo_path=os.path.join(MAINFOLDER,"Logo","logo_wipro_cropped.jpg")
+logo_path=os.path.join(MAINFOLDER,"Logo","logo_wipro_cropped.png")
 
 # Define the path to save models within the main folder
 model_folder_path = os.path.join(MAINFOLDER, "Models")
